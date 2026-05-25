@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Historique des conversations</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4e8;
+            padding: 20px;
+        }
+
+        .header {
+            background: #2e7d32;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 { font-size: 22px; }
+        .header p { font-size: 13px; opacity: 0.8; margin-top: 5px; }
+
+        .btn-retour {
+            display: inline-block;
+            margin-bottom: 15px;
+            background: #2e7d32;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .btn-retour:hover { background: #1b5e20; }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+            flex: 1;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-card h2 {
+            font-size: 30px;
+            color: #2e7d32;
+        }
+
+        .stat-card p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .recherche {
+            margin-bottom: 20px;
+        }
+
+        .recherche input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .recherche input:focus { border-color: #2e7d32; }
+
+        .conversation {
+            background: white;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #2e7d32;
+        }
+
+        .conversation .question {
+            font-weight: bold;
+            color: #1b5e20;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .conversation .reponse {
+            color: #444;
+            font-size: 13px;
+            white-space: pre-wrap;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .conversation .date {
+            font-size: 11px;
+            color: #999;
+            margin-top: 8px;
+            text-align: right;
+        }
+
+        .vide {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+            font-size: 16px;
+        }
+
+        .chargement {
+            text-align: center;
+            padding: 40px;
+            color: #2e7d32;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="/" class="btn-retour">⬅️ Retour au chatbot</a>
+
+    <div class="header">
+        <h1>📊 Historique des conversations</h1>
+        <p>Toutes les questions posées à l'assistant agricole</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <h2 id="total">-</h2>
+            <p>Questions posées</p>
+        </div>
+        <div class="stat-card">
+            <h2 id="aujourd-hui">-</h2>
+            <p>Aujourd'hui</p>
+        </div>
+        <div class="stat-card">
+            <h2 id="derniere">-</h2>
+            <p>Dernière question</p>
+        </div>
+    </div>
+
+    <div class="recherche">
+        <input
+            type="text"
+            id="recherche"
+            placeholder="🔍 Rechercher dans l'historique..."
+            oninput="filtrer()"
+        />
+    </div>
+
+    <div id="liste">
+        <div class="chargement">⏳ Chargement de l'historique...</div>
+    </div>
+
+<script>
+    let toutesConversations = [];
+
+    function chargerHistorique() {
+        fetch('/historique')
+        .then(res => res.json())
+        .then(data => {
+            toutesConversations = data;
+            afficher(data);
+            afficherStats(data);
+        })
+        .catch(() => {
+            document.getElementById('liste').innerHTML =
+                '<div class="vide">❌ Erreur de chargement</div>';
+        });
+    }
+
+    function afficherStats(data) {
+        document.getElementById('total').textContent = data.length;
+
+        const aujourd = new Date().toLocaleDateString('fr-FR');
+        const nb = data.filter(c => {
+            const d = new Date(c.date).toLocaleDateString('fr-FR');
+            return d === aujourd;
+        }).length;
+        document.getElementById('aujourd-hui').textContent = nb;
+
+        if (data.length > 0) {
+            const d = new Date(data[0].date);
+            document.getElementById('derniere').textContent =
+                d.toLocaleTimeString('fr-FR', {hour: '2-digit', minute: '2-digit'});
+        } else {
+            document.getElementById('derniere').textContent = '-';
+        }
+    }
+
+    function afficher(data) {
+        const liste = document.getElementById('liste');
+
+        if (data.length === 0) {
+            liste.innerHTML = '<div class="vide">📭 Aucune conversation trouvée</div>';
+            return;
+        }
+
+        liste.innerHTML = data.map(c => `
+            <div class="conversation">
+                <div class="question">❓ ${c.question}</div>
+                <div class="reponse">${c.reponse}</div>
+                <div class="date">🕐 ${new Date(c.date).toLocaleString('fr-FR')}</div>
+            </div>
+        `).join('');
+    }
+
+    function filtrer() {
+        const terme = document.getElementById('recherche').value.toLowerCase();
+        const filtre = toutesConversations.filter(c =>
+            c.question.toLowerCase().includes(terme) ||
+            c.reponse.toLowerCase().includes(terme)
+        );
+        afficher(filtre);
+    }
+
+    chargerHistorique();
+</script>
+</body>
+</html>
