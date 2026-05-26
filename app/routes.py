@@ -55,3 +55,6 @@ def alertes():
 @main.route('/historique-page')
 def historique_page():
     return render_template('historique.html')
+@main.route('/calendrier')
+def calendrier():
+    return render_template('calendrier.html')

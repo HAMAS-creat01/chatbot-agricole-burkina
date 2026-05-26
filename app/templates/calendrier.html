@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📅 Calendrier Agricole - Burkina Faso</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f0f4f8; }
+
+        .navbar {
+            background: #1a3a5c;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .navbar-brand { color: white; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .navbar-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+        .navbar-links a:hover { background: rgba(255,255,255,0.15); color: white; }
+
+        .container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
+
+        .titre {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .titre h1 { font-size: 26px; color: #1a3a5c; font-weight: 700; }
+        .titre p { color: #64748b; margin-top: 8px; font-size: 14px; }
+
+        .legende {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        .legende-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #475569;
+        }
+        .legende-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .calendrier {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        thead tr {
+            background: #1a3a5c;
+            color: white;
+        }
+
+        thead th {
+            padding: 12px 8px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        thead th:first-child { text-align: left; padding-left: 16px; }
+
+        tbody tr {
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover { background: #f8fafc; }
+
+        tbody td {
+            padding: 10px 8px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        tbody td:first-child {
+            text-align: left;
+            padding-left: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            min-width: 120px;
+        }
+
+        .cell-semis { background: #dcfce7; border-radius: 4px; }
+        .cell-croissance { background: #fef9c3; border-radius: 4px; }
+        .cell-recolte { background: #fee2e2; border-radius: 4px; }
+        .cell-repos { background: #f1f5f9; border-radius: 4px; color: #94a3b8; }
+
+        .mois-actuel { background: #dbeafe !important; }
+
+        .culture-icon { margin-right: 6px; }
+
+        .filtres {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filtre-btn {
+            padding: 8px 18px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 20px;
+            background: white;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+            color: #475569;
+        }
+
+        .filtre-btn.actif {
+            background: #1a3a5c;
+            color: white;
+            border-color: #1a3a5c;
+        }
+
+        .footer {
+            background: #1a3a5c;
+            color: rgba(255,255,255,0.6);
+            text-align: center;
+            padding: 8px;
+            font-size: 11px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">
+        <span>🌾</span>
+        <div>
+            <div>Assistant Agricole</div>
+            <div style="font-size:11px; opacity:0.7; font-weight:400">Burkina Faso</div>
+        </div>
+    </div>
+    <div class="navbar-links">
+        <a href="/">💬 Chatbot</a>
+        <a href="/historique-page">📊 Historique</a>
+        <a href="/calendrier">📅 Calendrier</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="titre">
+        <h1>📅 Calendrier Agricole du Burkina Faso</h1>
+        <p>Périodes optimales de semis, croissance et récolte des principales cultures</p>
+    </div>
+
+    <div class="legende">
+        <div class="legende-item">
+            <div class="legende-color" style="background:#dcfce7"></div>
+            <span>🌱 Semis / Plantation</span>
+        </div>
+        <div class="legende-item">
+            <div class="legende-color" style="background:#fef9c3"></div>
+            <span>🌿 Croissance</span>
+        </div>
+        <div class="legende-item">
+            <div class="legende-color" style="background:#fee2e2"></div>
+            <span>🌾 Récolte</span>
+        </div>
+        <div class="legende-item">
+            <div class="legende-color" style="background:#f1f5f9"></div>
+            <span>💤 Repos</span>
+        </div>
+    </div>
+
+    <div class="filtres">
+        <button class="filtre-btn actif" onclick="filtrer('tout', this)">Toutes les cultures</button>
+        <button class="filtre-btn" onclick="filtrer('cereales', this)">🌾 Céréales</button>
+        <button class="filtre-btn" onclick="filtrer('legumineuses', this)">🫘 Légumineuses</button>
+        <button class="filtre-btn" onclick="filtrer('maraicher', this)">🥬 Maraîchage</button>
+        <button class="filtre-btn" onclick="filtrer('rente', this)">💰 Cultures de rente</button>
+    </div>
+
+    <div class="calendrier">
+        <table id="tableau">
+            <thead>
+                <tr>
+                    <th>Culture</th>
+                    <th>Jan</th><th>Fév</th><th>Mar</th><th>Avr</th>
+                    <th>Mai</th><th>Juin</th><th>Juil</th><th>Août</th>
+                    <th>Sep</th><th>Oct</th><th>Nov</th><th>Déc</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="footer">
+    🌾 Assistant Agricole Burkina Faso — Université Virtuelle du Burkina Faso © 2024
+</div>
+
+<script>
+const CULTURES = [
+    { nom: "🌽 Maïs", categorie: "cereales",
+      mois: ["repos","repos","repos","repos","semis","semis","croissance","croissance","recolte","recolte","repos","repos"] },
+    { nom: "🌾 Mil", categorie: "cereales",
+      mois: ["repos","repos","repos","repos","repos","semis","semis","croissance","croissance","recolte","recolte","repos"] },
+    { nom: "🌾 Sorgho", categorie: "cereales",
+      mois: ["repos","repos","repos","repos","repos","semis","semis","croissance","croissance","recolte","recolte","repos"] },
+    { nom: "🌾 Riz", categorie: "cereales",
+      mois: ["repos","repos","repos","repos","repos","semis","semis","croissance","croissance","recolte","repos","repos"] },
+    { nom: "🫘 Niébé", categorie: "legumineuses",
+      mois: ["repos","repos","repos","repos","repos","repos","semis","semis","recolte","recolte","repos","repos"] },
+    { nom: "🥜 Arachide", categorie: "legumineuses",
+      mois: ["repos","repos","repos","repos","repos","semis","semis","croissance","recolte","recolte","repos","repos"] },
+    { nom: "🌿 Sésame", categorie: "legumineuses",
+      mois: ["repos","repos","repos","repos","repos","repos","semis","croissance","recolte","repos","repos","repos"] },
+    { nom: "🍅 Tomate", categorie: "maraicher",
+      mois: ["recolte","recolte","repos","repos","repos","repos","semis","croissance","croissance","recolte","recolte","recolte"] },
+    { nom: "🧅 Oignon", categorie: "maraicher",
+      mois: ["croissance","croissance","recolte","repos","repos","repos","repos","repos","repos","semis","semis","croissance"] },
+    { nom: "🥬 Chou", categorie: "maraicher",
+      mois: ["recolte","repos","repos","repos","repos","repos","repos","repos","semis","croissance","croissance","recolte"] },
+    { nom: "🌿 Coton", categorie: "rente",
+      mois: ["repos","repos","repos","repos","semis","semis","croissance","croissance","croissance","recolte","recolte","repos"] },
+    { nom: "🥭 Mangue", categorie: "rente",
+      mois: ["recolte","recolte","recolte","recolte","repos","repos","repos","repos","repos","repos","repos","repos"] },
+    { nom: "🌰 Anacarde", categorie: "rente",
+      mois: ["repos","repos","recolte","recolte","recolte","repos","repos","repos","repos","repos","repos","repos"] },
+    { nom: "🍠 Igname", categorie: "maraicher",
+      mois: ["repos","repos","semis","semis","croissance","croissance","croissance","croissance","croissance","recolte","recolte","repos"] },
+];
+
+const MOIS_ACTUEL = new Date().getMonth();
+
+function getClass(type) {
+    switch(type) {
+        case 'semis': return 'cell-semis';
+        case 'croissance': return 'cell-croissance';
+        case 'recolte': return 'cell-recolte';
+        default: return 'cell-repos';
+    }
+}
+
+function getEmoji(type) {
+    switch(type) {
+        case 'semis': return '🌱';
+        case 'croissance': return '🌿';
+        case 'recolte': return '🌾';
+        default: return '';
+    }
+}
+
+function afficher(cultures) {
+    const tbody = document.getElementById('tbody');
+    tbody.innerHTML = '';
+    cultures.forEach(culture => {
+        const tr = document.createElement('tr');
+        let html = `<td>${culture.nom}</td>`;
+        culture.mois.forEach((type, i) => {
+            const moisClass = i === MOIS_ACTUEL ? ' mois-actuel' : '';
+            html += `<td class="${getClass(type)}${moisClass}">${getEmoji(type)}</td>`;
+        });
+        tr.innerHTML = html;
+        tbody.appendChild(tr);
+    });
+}
+
+function filtrer(categorie, btn) {
+    document.querySelectorAll('.filtre-btn').forEach(b => b.classList.remove('actif'));
+    btn.classList.add('actif');
+    if (categorie === 'tout') {
+        afficher(CULTURES);
+    } else {
+        afficher(CULTURES.filter(c => c.categorie === categorie));
+    }
+}
+
+// Highlight mois actuel dans le header
+document.addEventListener('DOMContentLoaded', () => {
+    const ths = document.querySelectorAll('thead th');
+    if (ths[MOIS_ACTUEL + 1]) {
+        ths[MOIS_ACTUEL + 1].style.background = '#2563eb';
+    }
+    afficher(CULTURES);
+});
+</script>
+</body>
+</html>
