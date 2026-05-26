@@ -3,170 +3,311 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌾 Chatbot Agricole - Burkina Faso</title>
+    <title>🌾 Assistant Agricole - Burkina Faso</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #f0f4e8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: 'Inter', sans-serif;
+            background: #f0f4f8;
             min-height: 100vh;
-            padding: 10px;
+            display: flex;
+            flex-direction: column;
         }
-        .container {
-            width: 100%;
-            max-width: 100%;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            overflow: hidden;
+
+        /* NAVBAR */
+        .navbar {
+            background: #1a3a5c;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
-        .header {
-            background: #2e7d32;
-            color: white;
-            padding: 15px 20px;
-            text-align: center;
-        }
-        .header h1 { font-size: clamp(16px, 4vw, 22px); }
-        .header p { font-size: 13px; opacity: 0.8; margin-top: 5px; }
-        .header a { color: white; font-size: 12px; opacity: 0.8; text-decoration: none; display: block; margin-top: 8px; }
-        .region-bar {
-            background: #f1f8e9;
-            padding: 10px 15px;
+
+        .navbar-brand {
             display: flex;
             align-items: center;
             gap: 10px;
-            border-bottom: 1px solid #dcedc8;
-            font-size: 13px;
-            color: #2e7d32;
-            flex-wrap: wrap;
+            color: white;
+            font-size: 18px;
+            font-weight: 700;
         }
-        .region-bar select {
-            padding: 6px 12px;
-            border: 2px solid #a5d6a7;
-            border-radius: 20px;
-            background: white;
-            color: #2e7d32;
-            font-size: 13px;
-            outline: none;
-            cursor: pointer;
-            flex: 1;
-        }
-        .messages {
-            height: calc(100vh - 280px);
-            overflow-y: auto;
-            padding: 15px;
+
+        .navbar-brand span { font-size: 24px; }
+
+        .navbar-links {
             display: flex;
-            flex-direction: column;
-            gap: 12px;
+            gap: 20px;
         }
-        .message {
-            max-width: 85%;
-            padding: 10px 14px;
-            border-radius: 15px;
-            font-size: clamp(12px, 2.5vw, 14px);
-            line-height: 1.6;
-            white-space: pre-wrap;
-        }
-        .message.bot { background: #e8f5e9; color: #1b5e20; align-self: flex-start; border-bottom-left-radius: 3px; }
-        .message.user { background: #2e7d32; color: white; align-self: flex-end; border-bottom-right-radius: 3px; }
-        .suggestions {
-            padding: 8px 15px;
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            border-top: 1px solid #f0f0f0;
-        }
-        .suggestion {
-            background: #e8f5e9;
-            color: #2e7d32;
-            border: 1px solid #c8e6c9;
-            padding: 5px 10px;
+
+        .navbar-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: clamp(10px, 2vw, 12px);
-            cursor: pointer;
             transition: all 0.2s;
         }
-        .suggestion:hover { background: #2e7d32; color: white; }
-        .input-area {
-            display: flex;
-            padding: 10px 15px;
-            gap: 8px;
-            border-top: 1px solid #eee;
-        }
-        input {
-            flex: 1;
-            padding: 10px 14px;
-            border: 2px solid #e0e0e0;
-            border-radius: 25px;
-            font-size: clamp(12px, 2.5vw, 14px);
-            outline: none;
-            transition: border 0.2s;
-            min-width: 0;
-        }
-        input:focus { border-color: #2e7d32; }
-        button {
-            background: #2e7d32;
+
+        .navbar-links a:hover {
+            background: rgba(255,255,255,0.15);
             color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: clamp(14px, 3vw, 16px);
-            transition: background 0.2s;
-            flex-shrink: 0;
         }
-        button:hover { background: #1b5e20; }
-        #btn-micro { background: #1565c0; padding: 10px 14px; }
-        #btn-micro:hover { background: #0d47a1; }
-        #btn-micro.actif { background: #c62828; animation: clignoter 1s infinite; }
+
+        /* ALERTE */
+        .alerte-bandeau {
+            display: none;
+            padding: 10px 24px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            animation: clignoter 2s infinite;
+        }
+
+        .alerte-bandeau.danger { background: #dc2626; color: white; }
+        .alerte-bandeau.warning { background: #d97706; color: white; }
+
+        @keyframes clignoter {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+
+        .alerte-liste {
+            display: none;
+            padding: 8px 24px;
+            background: #fef3c7;
+            border-left: 4px solid #d97706;
+            font-size: 13px;
+            color: #92400e;
+        }
+
+        /* PROVINCE BAR */
+        .province-bar {
+            background: white;
+            padding: 10px 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .province-bar label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1a3a5c;
+            white-space: nowrap;
+        }
+
+        .province-bar select {
+            flex: 1;
+            padding: 8px 14px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #1a3a5c;
+            background: white;
+            outline: none;
+            cursor: pointer;
+            transition: border 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .province-bar select:focus { border-color: #2563eb; }
+
+        /* MAIN */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 100%;
+            padding: 0;
+        }
+
+        /* MESSAGES */
+        .messages {
+            flex: 1;
+            height: calc(100vh - 220px);
+            overflow-y: auto;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #f8fafc;
+        }
+
+        .message {
+            max-width: 75%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .message.bot {
+            background: white;
+            color: #1e293b;
+            align-self: flex-start;
+            border-bottom-left-radius: 3px;
+            border-left: 3px solid #2563eb;
+        }
+
+        .message.user {
+            background: #2563eb;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 3px;
+        }
+
+        .message-avatar {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .message-avatar.user-label { text-align: right; }
+
+        /* SUGGESTIONS */
+        .suggestions {
+            padding: 10px 24px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .suggestion {
+            background: #eff6ff;
+            color: #2563eb;
+            border: 1.5px solid #bfdbfe;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .suggestion:hover {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        /* TYPING */
         .typing {
             display: none;
             align-self: flex-start;
-            background: #e8f5e9;
-            padding: 10px 14px;
-            border-radius: 15px;
-            color: #2e7d32;
+            background: white;
+            border-left: 3px solid #2563eb;
+            padding: 10px 16px;
+            border-radius: 12px;
+            color: #64748b;
             font-size: 13px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
         }
-        .alerte-bandeau {
-            display: none;
-            padding: 8px 15px;
-            font-size: 13px;
-            font-weight: bold;
+
+        /* INPUT AREA */
+        .input-area {
+            display: flex;
+            padding: 12px 24px;
+            gap: 10px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+            align-items: center;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border 0.2s;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+            min-width: 0;
+        }
+
+        .input-area input:focus { border-color: #2563eb; }
+
+        .input-area input::placeholder { color: #94a3b8; }
+
+        .btn {
+            border: none;
+            padding: 12px 18px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-send {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-send:hover { background: #1d4ed8; }
+
+        .btn-micro {
+            background: #0f172a;
+            color: white;
+        }
+
+        .btn-micro:hover { background: #1e293b; }
+        .btn-micro.actif { background: #dc2626; animation: clignoter 1s infinite; }
+
+        /* FOOTER */
+        .footer {
+            background: #1a3a5c;
+            color: rgba(255,255,255,0.6);
             text-align: center;
-            animation: clignoter 1.5s infinite;
+            padding: 8px;
+            font-size: 11px;
         }
-        .alerte-bandeau.danger { background: #c62828; color: white; }
-        .alerte-bandeau.warning { background: #f57f17; color: white; }
-        @keyframes clignoter { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-        .alerte-liste {
-            display: none;
-            padding: 8px 15px;
-            background: #fff3e0;
-            border-left: 4px solid #e65100;
-            margin: 5px 10px;
-            border-radius: 5px;
-            font-size: 13px;
-        }
+
         @media (max-width: 480px) {
-            body { padding: 0; }
-            .container { border-radius: 0; min-height: 100vh; display: flex; flex-direction: column; }
-            .messages { flex: 1; height: auto; }
+            .navbar-links { display: none; }
+            .messages { height: calc(100vh - 250px); }
+            .input-area { padding: 10px 12px; }
+            .province-bar { padding: 8px 12px; }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <h1>🌾 Assistant Agricole</h1>
-        <p>Conseils agricoles pour les agriculteurs du Burkina Faso</p>
-        <a href="/historique-page">📊 Voir l'historique</a>
-    </div>
 
-    <div class="region-bar">
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <span>🌾</span>
+            <div>
+                <div>Assistant Agricole</div>
+                <div style="font-size:11px; opacity:0.7; font-weight:400">Burkina Faso</div>
+            </div>
+        </div>
+        <div class="navbar-links">
+            <a href="/">💬 Chatbot</a>
+            <a href="/historique-page">📊 Historique</a>
+        </div>
+    </nav>
+
+    <!-- ALERTES -->
+    <div class="alerte-bandeau danger" id="alerte-bandeau">
+        🚨 <span id="alerte-texte"></span>
+    </div>
+    <div class="alerte-liste" id="alerte-liste"></div>
+
+    <!-- PROVINCE -->
+    <div class="province-bar">
         <label>🗺️ Votre province :</label>
         <select id="region-select" onchange="changerRegion()">
             <option value="">-- Choisir votre province --</option>
@@ -220,43 +361,47 @@
         </select>
     </div>
 
-    <div class="alerte-bandeau danger" id="alerte-bandeau">
-        🚨 <span id="alerte-texte"></span>
-    </div>
-    <div class="alerte-liste" id="alerte-liste"></div>
-
-    <div class="messages" id="messages">
-        <div class="message bot">
-👋 Bonjour ! Je suis votre assistant agricole.
+    <!-- MAIN -->
+    <div class="main">
+        <div class="messages" id="messages">
+            <div class="message-avatar">🤖 Assistant Agricole</div>
+            <div class="message bot">
+👋 Bonjour ! Je suis votre assistant agricole intelligent.
 
 Je peux vous aider sur :
-🌤️ Météo locale
-🌱 Périodes de plantation
+🌤️ Météo et prévisions locales
+🌱 Périodes de plantation optimales
 🦠 Maladies et traitements
-🌍 Types de sol
-🌾 Conseils de récolte
-🗺️ Conseils par région
+🌍 Types de sol et fertilisation
+🌾 Conseils de récolte et conservation
+🗺️ Informations par province
 
-Choisissez votre région dans le menu ou posez votre question !
+Choisissez votre province ou posez votre question !
+            </div>
+        </div>
+
+        <div class="suggestions">
+            <span class="suggestion" onclick="envoyerSuggestion(this)">🌤️ Météo Ouagadougou</span>
+            <span class="suggestion" onclick="envoyerSuggestion(this)">🌱 Quand planter le maïs ?</span>
+            <span class="suggestion" onclick="envoyerSuggestion(this)">🦠 Maladies du sorgho</span>
+            <span class="suggestion" onclick="envoyerSuggestion(this)">🌾 Quand récolter le mil ?</span>
+            <span class="suggestion" onclick="envoyerSuggestion(this)">🌍 Conseils sol arachide</span>
+        </div>
+
+        <div class="typing" id="typing">⏳ Assistant en train d'écrire...</div>
+
+        <div class="input-area">
+            <input type="text" id="input" placeholder="Posez votre question agricole..."
+                onkeypress="if(event.key==='Enter') envoyer()"/>
+            <button class="btn btn-micro" id="btn-micro" onclick="activerVocal()" title="Vocal">🎤</button>
+            <button class="btn btn-send" onclick="envoyer()">➤</button>
         </div>
     </div>
 
-    <div class="suggestions">
-        <span class="suggestion" onclick="envoyerSuggestion(this)">🌤️ Météo à Ouagadougou</span>
-        <span class="suggestion" onclick="envoyerSuggestion(this)">🌱 Quand planter le maïs ?</span>
-        <span class="suggestion" onclick="envoyerSuggestion(this)">🦠 Maladies du sorgho</span>
-        <span class="suggestion" onclick="envoyerSuggestion(this)">🌾 Quand récolter le mil ?</span>
+    <!-- FOOTER -->
+    <div class="footer">
+        🌾 Assistant Agricole Burkina Faso — Université Virtuelle du Burkina Faso © 2024
     </div>
-
-    <div class="typing" id="typing">⏳ Assistant en train d'écrire...</div>
-
-    <div class="input-area">
-        <input type="text" id="input" placeholder="Posez votre question..."
-            onkeypress="if(event.key==='Enter') envoyer()"/>
-        <button id="btn-micro" onclick="activerVocal()" title="Parler">🎤</button>
-        <button onclick="envoyer()">➤</button>
-    </div>
-</div>
 
 <script>
     function envoyer() {
@@ -284,9 +429,13 @@ Choisissez votre région dans le menu ou posez votre question !
 
     function ajouterMessage(texte, type) {
         const messages = document.getElementById('messages');
+        const label = document.createElement('div');
+        label.className = 'message-avatar' + (type === 'user' ? ' user-label' : '');
+        label.textContent = type === 'user' ? '👤 Vous' : '🤖 Assistant';
         const div = document.createElement('div');
-        div.className = `message ${type}`;
+        div.className = 'message ' + type;
         div.textContent = texte;
+        messages.appendChild(label);
         messages.appendChild(div);
         messages.scrollTop = messages.scrollHeight;
     }
@@ -300,7 +449,7 @@ Choisissez votre région dans le menu ou posez votre question !
         const select = document.getElementById('region-select');
         const region = select.value;
         if (!region) return;
-        ajouterMessage('📍 Région sélectionnée : ' + region, 'user');
+        ajouterMessage('📍 Province sélectionnée : ' + region, 'user');
         document.getElementById('typing').style.display = 'block';
         fetch('/chat', {
             method: 'POST',
@@ -313,12 +462,11 @@ Choisissez votre région dans le menu ou posez votre question !
             ajouterMessage(data.reponse || data.erreur, 'bot');
         });
         const villes = {
-            "Centre (Ouagadougou)": "Ouagadougou",
-            "Sahel (Dori)": "Dori",
-            "Est (Fada N'Gourma)": "Fada Ngourma",
-            "Hauts-Bassins (Bobo-Dioulasso)": "Bobo-Dioulasso",
-            "Nord (Ouahigouya)": "Ouahigouya",
-            "Centre-Ouest (Gaoua)": "Gaoua"
+            "Kadiogo": "Ouagadougou", "Houet": "Bobo-Dioulasso",
+            "Gourma": "Fada Ngourma", "Yatenga": "Ouahigouya",
+            "Sanmatenga": "Kaya", "Seno": "Dori", "Oudalan": "Gorom-Gorom",
+            "Soum": "Djibo", "Comoe": "Banfora", "Kenedougou": "Orodara",
+            "Poni": "Gaoua", "Mouhoun": "Dedougou", "Tapoa": "Diapaga"
         };
         chargerAlertes(villes[region] || "Ouagadougou");
     }
@@ -330,30 +478,25 @@ Choisissez votre région dans le menu ou posez votre question !
             alert('❌ Utilisez Chrome pour la reconnaissance vocale.');
             return;
         }
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SR();
         recognition.lang = 'fr-FR';
         recognition.interimResults = false;
         btn.classList.add('actif');
         btn.textContent = '⏹️';
         input.placeholder = '🎤 Parlez maintenant...';
         recognition.start();
-        recognition.onresult = function(event) {
-            input.value = event.results[0][0].transcript;
+        recognition.onresult = e => {
+            input.value = e.results[0][0].transcript;
             btn.classList.remove('actif');
             btn.textContent = '🎤';
-            input.placeholder = 'Posez votre question...';
+            input.placeholder = 'Posez votre question agricole...';
             envoyer();
         };
-        recognition.onerror = function() {
+        recognition.onerror = recognition.onend = () => {
             btn.classList.remove('actif');
             btn.textContent = '🎤';
-            input.placeholder = 'Posez votre question...';
-        };
-        recognition.onend = function() {
-            btn.classList.remove('actif');
-            btn.textContent = '🎤';
-            input.placeholder = 'Posez votre question...';
+            input.placeholder = 'Posez votre question agricole...';
         };
     }
 
@@ -364,20 +507,20 @@ Choisissez votre région dans le menu ou posez votre question !
             const bandeau = document.getElementById('alerte-bandeau');
             const liste = document.getElementById('alerte-liste');
             if (alertes.length > 0) {
-                const premiere = alertes[0];
-                bandeau.className = 'alerte-bandeau ' + premiere.type;
-                document.getElementById('alerte-texte').textContent = premiere.icone + ' ' + premiere.message;
+                const p = alertes[0];
+                bandeau.className = 'alerte-bandeau ' + p.type;
+                document.getElementById('alerte-texte').textContent = p.icone + ' ' + p.message;
                 bandeau.style.display = 'block';
                 if (alertes.length > 1) {
                     liste.style.display = 'block';
-                    liste.innerHTML = alertes.map(a => '<div>' + a.icone + ' ' + a.message + '</div>').join('<hr style="margin:5px 0">');
+                    liste.innerHTML = alertes.map(a => '⚠️ ' + a.message).join(' &nbsp;|&nbsp; ');
                 }
             } else {
                 bandeau.style.display = 'none';
                 liste.style.display = 'none';
             }
         })
-        .catch(err => console.log('Alertes non disponibles'));
+        .catch(() => {});
     }
 
     window.onload = () => chargerAlertes();
