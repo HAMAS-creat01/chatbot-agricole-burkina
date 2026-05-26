@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗺️ Carte des Provinces - Burkina Faso</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #f0f4f8; }
+
+        .navbar {
+            background: #1a3a5c;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .navbar-brand { color: white; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .navbar-links { display: flex; gap: 10px; }
+        .navbar-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+        .navbar-links a:hover { background: rgba(255,255,255,0.15); color: white; }
+
+        .page { display: flex; height: calc(100vh - 54px); }
+
+        #carte { flex: 1; }
+
+        .panneau {
+            width: 320px;
+            background: white;
+            overflow-y: auto;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panneau-header {
+            background: #1a3a5c;
+            color: white;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .panneau-header h2 { font-size: 16px; font-weight: 700; }
+        .panneau-header p { font-size: 12px; opacity: 0.7; margin-top: 4px; }
+
+        .panneau-content { padding: 16px; flex: 1; }
+
+        .info-defaut {
+            text-align: center;
+            color: #94a3b8;
+            padding: 40px 20px;
+        }
+
+        .info-defaut span { font-size: 48px; display: block; margin-bottom: 12px; }
+        .info-defaut p { font-size: 14px; }
+
+        .province-info { display: none; }
+
+        .province-nom {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a3a5c;
+            margin-bottom: 4px;
+        }
+
+        .province-ville {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 16px;
+        }
+
+        .section {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-left: 3px solid #2563eb;
+        }
+
+        .section-titre {
+            font-size: 12px;
+            font-weight: 700;
+            color: #1a3a5c;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .section p { font-size: 13px; color: #475569; line-height: 1.6; }
+
+        .cultures-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .culture-tag {
+            background: #dbeafe;
+            color: #1d4ed8;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .plantation-list { list-style: none; }
+        .plantation-list li {
+            font-size: 12px;
+            color: #475569;
+            padding: 3px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .btn-chat {
+            display: block;
+            background: #2563eb;
+            color: white;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 16px;
+            transition: background 0.2s;
+        }
+
+        .btn-chat:hover { background: #1d4ed8; }
+
+        .meteo-btn {
+            display: block;
+            background: #0f172a;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            margin-top: 8px;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s;
+        }
+
+        .meteo-btn:hover { background: #1e293b; }
+
+        .meteo-result {
+            background: #f0f9ff;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #0369a1;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .page { flex-direction: column; }
+            #carte { height: 50vh; }
+            .panneau { width: 100%; height: 50vh; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="navbar-brand">
+        <span>🌾</span>
+        <div>
+            <div>Assistant Agricole</div>
+            <div style="font-size:11px; opacity:0.7; font-weight:400">Burkina Faso</div>
+        </div>
+    </div>
+    <div class="navbar-links">
+        <a href="/">💬 Chatbot</a>
+        <a href="/historique-page">📊 Historique</a>
+        <a href="/calendrier">📅 Calendrier</a>
+        <a href="/carte">🗺️ Carte</a>
+    </div>
+</nav>
+
+<div class="page">
+    <div id="carte"></div>
+
+    <div class="panneau">
+        <div class="panneau-header">
+            <h2>🗺️ Carte des Provinces</h2>
+            <p>Cliquez sur une province</p>
+        </div>
+
+        <div class="panneau-content">
+            <div class="info-defaut" id="info-defaut">
+                <span>👆</span>
+                <p>Cliquez sur une province pour voir ses informations agricoles</p>
+            </div>
+
+            <div class="province-info" id="province-info">
+                <div class="province-nom" id="prov-nom"></div>
+                <div class="province-ville" id="prov-ville">🌆 Ville principale : <span id="prov-ville-nom"></span></div>
+
+                <div class="section">
+                    <div class="section-titre">🌱 Cultures principales</div>
+                    <div class="cultures-list" id="prov-cultures"></div>
+                </div>
+
+                <div class="section">
+                    <div class="section-titre">🌍 Sol</div>
+                    <p id="prov-sol"></p>
+                </div>
+
+                <div class="section">
+                    <div class="section-titre">💡 Conseil sol</div>
+                    <p id="prov-conseil"></p>
+                </div>
+
+                <div class="section">
+                    <div class="section-titre">📅 Périodes de plantation</div>
+                    <ul class="plantation-list" id="prov-plantation"></ul>
+                </div>
+
+                <div class="section">
+                    <div class="section-titre">ℹ️ Particularités</div>
+                    <p id="prov-particularites"></p>
+                </div>
+
+                <button class="meteo-btn" onclick="voirMeteo()">🌤️ Voir la météo actuelle</button>
+                <div class="meteo-result" id="meteo-result"></div>
+
+                <a href="/" class="btn-chat" id="btn-chat">💬 Poser une question sur cette province</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const PROVINCES = {
+    "Kadiogo": { lat: 12.36, lng: -1.53, cultures: ["Légumes", "Maïs", "Niébé", "Sorgho"], sol: "Sol ferrugineux tropical", conseils_sol: "Maraîchage très pratique. Utilisez le compost.", plantation: {"Légumes": "Toute l'année", "Maïs": "Mai-Juin", "Niébé": "Juillet", "Sorgho": "Juin-Juillet"}, particularites: "Capitale nationale. Maraîchage urbain dominant.", ville_meteo: "Ouagadougou" },
+    "Houet": { lat: 11.17, lng: -4.30, cultures: ["Maïs", "Coton", "Mangue", "Anacarde"], sol: "Sol profond et fertile", conseils_sol: "Sol excellent pour cultures de rente.", plantation: {"Maïs": "Avril-Mai", "Coton": "Mai-Juin", "Mangue": "Saison sèche", "Anacarde": "Saison sèche"}, particularites: "Zone la plus fertile. Capitale économique.", ville_meteo: "Bobo-Dioulasso" },
+    "Gourma": { lat: 12.06, lng: 0.35, cultures: ["Sorgho", "Maïs", "Coton", "Sésame"], sol: "Sol argileux, bonne fertilité", conseils_sol: "Sol favorable au coton et sorgho.", plantation: {"Sorgho": "Juin-Juillet", "Maïs": "Mai-Juin", "Coton": "Mai-Juin", "Sésame": "Juillet"}, particularites: "Chef lieu région Est. Bonne zone agricole.", ville_meteo: "Fada Ngourma" },
+    "Yatenga": { lat: 13.58, lng: -2.42, cultures: ["Mil", "Sorgho", "Niébé", "Oignon"], sol: "Sol dégradé latéritique", conseils_sol: "Zai et demi-lune prioritaires.", plantation: {"Mil": "Juin-Juillet", "Sorgho": "Juillet", "Niébé": "Juillet-Août", "Oignon": "Oct-Jan"}, particularites: "Zone Nord. Très peuplée. Récupération terres.", ville_meteo: "Ouahigouya" },
+    "Seno": { lat: 14.03, lng: -0.03, cultures: ["Mil", "Niébé", "Sésame", "Arachide"], sol: "Sol sableux peu fertile", conseils_sol: "Zone sahélienne. Zaï et cordons pierreux.", plantation: {"Mil": "Juin-Juillet", "Niébé": "Juillet", "Sésame": "Juillet", "Arachide": "Juin"}, particularites: "Zone Sahel. Élevage et agriculture.", ville_meteo: "Dori" },
+    "Oudalan": { lat: 14.44, lng: -0.24, cultures: ["Mil", "Niébé", "Sésame"], sol: "Sol sableux, très peu fertile", conseils_sol: "Zone sahélienne extrême. Zaï obligatoire.", plantation: {"Mil": "Juillet", "Niébé": "Juillet-Août", "Sésame": "Juillet"}, particularites: "Zone Sahel. Très sèche. Élevage nomade dominant.", ville_meteo: "Gorom-Gorom" },
+    "Comoe": { lat: 10.63, lng: -4.77, cultures: ["Canne à sucre", "Maïs", "Anacarde", "Mangue"], sol: "Sol profond et fertile", conseils_sol: "Sol excellent. Protégez contre l'érosion.", plantation: {"Canne à sucre": "Permanente", "Maïs": "Avril-Mai", "Anacarde": "Saison sèche", "Mangue": "Saison sèche"}, particularites: "Zone la plus humide du Burkina.", ville_meteo: "Banfora" },
+    "Poni": { lat: 10.40, lng: -3.32, cultures: ["Maïs", "Igname", "Manioc", "Café"], sol: "Sol rouge ferralitique fertile", conseils_sol: "Zone très fertile. Évitez le brûlis.", plantation: {"Maïs": "Avril-Mai", "Igname": "Mars-Avril", "Manioc": "Avril-Mai", "Café": "Permanente"}, particularites: "Zone Sud-Ouest. Forte pluviométrie.", ville_meteo: "Gaoua" },
+    "Mouhoun": { lat: 12.46, lng: -3.47, cultures: ["Coton", "Maïs", "Sorgho", "Sésame"], sol: "Sol argileux fertile", conseils_sol: "Zone très cotonnière. Rotation avec légumineuses.", plantation: {"Coton": "Mai-Juin", "Maïs": "Mai-Juin", "Sorgho": "Juin-Juillet", "Sésame": "Juillet"}, particularites: "Capitale Boucle du Mouhoun. Coton dominant.", ville_meteo: "Dedougou" },
+    "Sourou": { lat: 13.07, lng: -2.93, cultures: ["Riz", "Maïs", "Coton", "Légumes"], sol: "Sol alluvial fertile", conseils_sol: "Zone de la vallée du Sourou. Irrigation disponible.", plantation: {"Riz": "Juin-Juillet", "Maïs": "Mai-Juin", "Coton": "Mai-Juin", "Légumes": "Toute l'année"}, particularites: "Zone rizicole importante.", ville_meteo: "Tougan" },
+    "Sanmatenga": { lat: 13.10, lng: -1.18, cultures: ["Mil", "Sorgho", "Niébé", "Sésame"], sol: "Sol ferrugineux peu fertile", conseils_sol: "Amendement organique et zaï.", plantation: {"Mil": "Juin-Juillet", "Sorgho": "Juillet", "Niébé": "Juillet", "Sésame": "Juillet"}, particularites: "Chef-lieu Centre-Nord. Agriculture et élevage.", ville_meteo: "Kaya" },
+    "Tapoa": { lat: 12.07, lng: 1.79, cultures: ["Sorgho", "Maïs", "Sésame", "Niébé"], sol: "Sol argileux et ferrugineux", conseils_sol: "Zone Est. Sol correct pour céréales.", plantation: {"Sorgho": "Juin-Juillet", "Maïs": "Mai-Juin", "Sésame": "Juillet", "Niébé": "Juillet"}, particularites: "Zone Est. Parc W. Élevage et agriculture.", ville_meteo: "Diapaga" },
+    "Kenedougou": { lat: 11.01, lng: -4.93, cultures: ["Maïs", "Mangue", "Anacarde", "Coton"], sol: "Sol profond fertile", conseils_sol: "Zone très fertile. Idéale pour l'arboriculture.", plantation: {"Maïs": "Avril-Mai", "Mangue": "Saison sèche", "Anacarde": "Saison sèche", "Coton": "Mai-Juin"}, particularites: "Zone de la mangue. Très bonne pluviométrie.", ville_meteo: "Orodara" },
+};
+
+let carteLeaflet;
+let villeSelectionnee = '';
+
+function initCarte() {
+    carteLeaflet = L.map('carte').setView([12.5, -1.5], 7);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+    }).addTo(carteLeaflet);
+
+    Object.entries(PROVINCES).forEach(([nom, data]) => {
+        const couleur = getCouleur(data.cultures[0]);
+        const marker = L.circleMarker([data.lat, data.lng], {
+            radius: 10,
+            fillColor: couleur,
+            color: '#1a3a5c',
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 0.8
+        }).addTo(carteLeaflet);
+
+        marker.bindTooltip(nom, { permanent: false, direction: 'top' });
+        marker.on('click', () => afficherProvince(nom, data));
+    });
+}
+
+function getCouleur(culture) {
+    if (['Coton', 'Mangue', 'Anacarde', 'Café', 'Canne à sucre'].includes(culture)) return '#f59e0b';
+    if (['Mil', 'Sorgho', 'Maïs', 'Riz'].includes(culture)) return '#22c55e';
+    if (['Légumes', 'Igname', 'Manioc'].includes(culture)) return '#3b82f6';
+    return '#8b5cf6';
+}
+
+function afficherProvince(nom, data) {
+    document.getElementById('info-defaut').style.display = 'none';
+    document.getElementById('province-info').style.display = 'block';
+
+    document.getElementById('prov-nom').textContent = '📍 ' + nom;
+    document.getElementById('prov-ville-nom').textContent = data.ville_meteo;
+
+    const culturesEl = document.getElementById('prov-cultures');
+    culturesEl.innerHTML = data.cultures.map(c => `<span class="culture-tag">${c}</span>`).join('');
+
+    document.getElementById('prov-sol').textContent = data.sol;
+    document.getElementById('prov-conseil').textContent = data.conseils_sol;
+
+    const plantationEl = document.getElementById('prov-plantation');
+    plantationEl.innerHTML = Object.entries(data.plantation).map(([c, p]) =>
+        `<li>• ${c} : <strong>${p}</strong></li>`
+    ).join('');
+
+    document.getElementById('prov-particularites').textContent = data.particularites;
+    document.getElementById('meteo-result').style.display = 'none';
+
+    villeSelectionnee = data.ville_meteo;
+    document.getElementById('btn-chat').href = `/?province=${nom}`;
+}
+
+function voirMeteo() {
+    if (!villeSelectionnee) return;
+    const result = document.getElementById('meteo-result');
+    result.style.display = 'block';
+    result.textContent = '⏳ Chargement météo...';
+
+    fetch('/alertes?ville=' + villeSelectionnee)
+    .then(res => res.json())
+    .then(alertes => {
+        if (alertes.length > 0) {
+            result.innerHTML = alertes.map(a => `<div>${a.icone} ${a.message}</div>`).join('<br>');
+        } else {
+            result.textContent = '✅ Conditions météo normales à ' + villeSelectionnee;
+        }
+    })
+    .catch(() => {
+        result.textContent = '❌ Météo non disponible';
+    });
+}
+
+initCarte();
+</script>
+</body>
+</html>

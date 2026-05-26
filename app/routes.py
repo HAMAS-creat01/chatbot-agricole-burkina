@@ -58,3 +58,7 @@ def historique_page():
 @main.route('/calendrier')
 def calendrier():
     return render_template('calendrier.html')
+
+@main.route('/carte')
+def carte():
+    return render_template('carte.html')
