@@ -2,18 +2,15 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-import spacy
 from app.meteo import conseil_meteo
 from app.database import get_db
 from app.regions import REGIONS
 
-nlp = spacy.load("fr_core_news_sm")
-
 INTENTIONS = {
-    "meteo": ["météo", "temps", "pluie", "soleil", "température", "climat", "vent"],
+    "meteo": ["météo", "meteo", "temps", "pluie", "soleil", "température", "climat", "vent"],
     "plantation": ["planter", "plantation", "semer", "semis", "période", "quand"],
     "maladie": ["maladie", "parasite", "insecte", "champignon", "traitement", "symptôme"],
-    "recolte": ["récolte", "récolter", "cueillir", "moissonner"],
+    "recolte": ["récolte", "recolte", "récolter", "cueillir", "moissonner"],
     "sol": ["sol", "terre", "fertilité", "engrais", "fumure"],
     "salutation": ["bonjour", "bonsoir", "salut", "hello"],
     "region": ["région", "zone", "sahel", "est", "nord", "centre", "hauts-bassins", "gaoua", "bobo", "ouahigouya", "dori", "fada"],
@@ -31,10 +28,6 @@ def detecter_intention(texte):
     return "inconnu"
 
 def extraire_ville(texte):
-    doc = nlp(texte)
-    for ent in doc.ents:
-        if ent.label_ in ["LOC", "GPE"]:
-            return ent.text
     mots = texte.split()
     for i, mot in enumerate(mots):
         if mot.lower() in ["à", "a", "pour", "de", "en"] and i + 1 < len(mots):
@@ -107,11 +100,11 @@ def repondre_region(region_nom):
             break
     if not region_data:
         regions_list = "\n".join([f"• {r}" for r in REGIONS.keys()])
-        return f"❌ Région non reconnue.\n\nRégions disponibles :\n{regions_list}"
+        return f"❌ Province non reconnue.\n\nProvinces disponibles :\n{regions_list}"
     r = region_data
     cultures = ", ".join(r["cultures"])
     plantations = "\n".join([f"  • {c} : {p}" for c, p in r["plantation"].items()])
-    return f"""🌍 Région : {region_nom}
+    return f"""🌍 Province : {region_nom}
 🌦️ Ville météo : {r['ville_meteo']}
 🌱 Cultures principales : {cultures}
 
@@ -159,6 +152,6 @@ Posez-moi des questions sur :
 - 🦠 Les maladies
 - 🌍 Le sol
 - 🌾 La récolte
-- 🗺️ Votre région"""
+- 🗺️ Votre province"""
     sauvegarder_conversation(question, reponse)
     return reponse
