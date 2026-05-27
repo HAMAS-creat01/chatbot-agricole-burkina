@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - Assistant Agricole</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #1b5e20, #2e7d32); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .card { background: white; border-radius: 16px; padding: 40px; width: 100%; max-width: 420px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); }
+        .logo { text-align: center; margin-bottom: 24px; }
+        .logo span { font-size: 48px; }
+        .logo h1 { font-size: 22px; font-weight: 700; color: #1b5e20; margin-top: 10px; }
+        .logo p { font-size: 13px; color: #64748b; margin-top: 4px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 16px; border: 1.5px solid #d1d5db; border-radius: 8px; font-size: 14px; outline: none; font-family: 'Inter', sans-serif; background: white; }
+        .form-group input:focus, .form-group select:focus { border-color: #2e7d32; }
+        .btn { width: 100%; padding: 13px; background: #2e7d32; color: white; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+        .btn:hover { background: #1b5e20; }
+        .erreur { background: #fee2e2; color: #dc2626; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; }
+        .succes { background: #dcfce7; color: #16a34a; padding: 10px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; display: none; }
+        .lien { text-align: center; margin-top: 16px; font-size: 13px; color: #64748b; }
+        .lien a { color: #2e7d32; font-weight: 600; text-decoration: none; }
+        .invité { text-align: center; margin-top: 8px; }
+        .invité a { color: #64748b; font-size: 13px; text-decoration: none; }
+        .note { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="logo">
+        <span>🌾</span>
+        <h1>Créer un compte</h1>
+        <p>Recevez des alertes agricoles par SMS</p>
+    </div>
+    <div class="erreur" id="erreur"></div>
+    <div class="succes" id="succes"></div>
+    <div class="form-group">
+        <label>👤 Nom complet</label>
+        <input type="text" id="nom" placeholder="Votre nom"/>
+    </div>
+    <div class="form-group">
+        <label>📧 Email</label>
+        <input type="email" id="email" placeholder="votre@email.com"/>
+    </div>
+    <div class="form-group">
+        <label>🔒 Mot de passe</label>
+        <input type="password" id="password" placeholder="6 caractères minimum"/>
+    </div>
+    <div class="form-group">
+        <label>📱 Téléphone <span style="color:#94a3b8">(pour alertes SMS)</span></label>
+        <input type="tel" id="telephone" placeholder="+22670000000"/>
+        <div class="note">Format international requis ex: +22670123456</div>
+    </div>
+    <div class="form-group">
+        <label>🗺️ Votre province</label>
+        <select id="province">
+            <option value="">-- Choisir votre province --</option>
+            <option value="Bam">Bam</option><option value="Banwa">Banwa</option>
+            <option value="Bazega">Bazega</option><option value="Bougouriba">Bougouriba</option>
+            <option value="Boulgou">Boulgou</option><option value="Boulkiemde">Boulkiemde</option>
+            <option value="Comoe">Comoe</option><option value="Ganzourgou">Ganzourgou</option>
+            <option value="Gnagna">Gnagna</option><option value="Gourma">Gourma</option>
+            <option value="Houet">Houet</option><option value="Ioba">Ioba</option>
+            <option value="Kadiogo">Kadiogo</option><option value="Kenedougou">Kenedougou</option>
+            <option value="Kompienga">Kompienga</option><option value="Kossi">Kossi</option>
+            <option value="Koulpelogo">Koulpelogo</option><option value="Kouritenga">Kouritenga</option>
+            <option value="Kourweogo">Kourweogo</option><option value="Leraba">Leraba</option>
+            <option value="Loroum">Loroum</option><option value="Mouhoun">Mouhoun</option>
+            <option value="Nahouri">Nahouri</option><option value="Namentenga">Namentenga</option>
+            <option value="Nayala">Nayala</option><option value="Noumbiel">Noumbiel</option>
+            <option value="Oubritenga">Oubritenga</option><option value="Oudalan">Oudalan</option>
+            <option value="Passore">Passore</option><option value="Poni">Poni</option>
+            <option value="Sanguie">Sanguie</option><option value="Sanmatenga">Sanmatenga</option>
+            <option value="Seno">Seno</option><option value="Sissili">Sissili</option>
+            <option value="Soum">Soum</option><option value="Sourou">Sourou</option>
+            <option value="Tapoa">Tapoa</option><option value="Tuy">Tuy</option>
+            <option value="Yagha">Yagha</option><option value="Yatenga">Yatenga</option>
+            <option value="Ziro">Ziro</option><option value="Zondoma">Zondoma</option>
+            <option value="Zoundweogo">Zoundweogo</option><option value="Bale">Bale</option>
+            <option value="Komandjari">Komandjari</option><option value="Tombe">Tombe</option>
+        </select>
+    </div>
+    <button class="btn" onclick="inscription()">Créer mon compte →</button>
+    <div class="lien">Déjà un compte ? <a href="/login">Se connecter</a></div>
+    <div class="invité"><a href="/">Continuer sans compte →</a></div>
+</div>
+<script>
+function inscription() {
+    const nom = document.getElementById('nom').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const telephone = document.getElementById('telephone').value.trim();
+    const province = document.getElementById('province').value;
+    const erreur = document.getElementById('erreur');
+    const succes = document.getElementById('succes');
+    if (!nom || !email || !password) { erreur.textContent = 'Veuillez remplir tous les champs obligatoires.'; erreur.style.display = 'block'; return; }
+    fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ nom, email, mot_de_passe: password, telephone, province }) })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) { succes.textContent = 'Compte cree ! Redirection...'; succes.style.display = 'block'; erreur.style.display = 'none'; setTimeout(() => window.location.href = '/', 1500); }
+        else { erreur.textContent = data.erreur; erreur.style.display = 'block'; }
+    });
+}
+</script>
+</body>
+</html>

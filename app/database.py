@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import sqlite3
 from config import Config
 
@@ -10,7 +14,6 @@ def init_db():
     conn = get_db()
     cursor = conn.cursor()
 
-    # Table cultures
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS cultures (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -22,7 +25,6 @@ def init_db():
         )
     ''')
 
-    # Table maladies
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS maladies (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,7 +35,6 @@ def init_db():
         )
     ''')
 
-    # Table conversations
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS conversations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,9 +45,22 @@ def init_db():
         )
     ''')
 
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS utilisateurs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nom TEXT NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            mot_de_passe TEXT NOT NULL,
+            telephone TEXT,
+            province TEXT,
+            alertes_sms INTEGER DEFAULT 1,
+            date_inscription TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+
     conn.commit()
     conn.close()
-    print("✅ Base de données initialisée !")
+    print("OK Base de donnees initialisee !")
 
 if __name__ == '__main__':
     init_db()
