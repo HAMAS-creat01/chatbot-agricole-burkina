@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from flask import Blueprint, request, jsonify, render_template, redirect, url_for, session
@@ -7,6 +8,19 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app.database import get_db
 
 auth = Blueprint('auth', __name__)
+
+def valider_mot_de_passe(mdp):
+    if len(mdp) < 8:
+        return "Le mot de passe doit contenir au moins 8 caractères"
+    if not re.search(r"[A-Z]", mdp):
+        return "Le mot de passe doit contenir au moins une majuscule"
+    if not re.search(r"[a-z]", mdp):
+        return "Le mot de passe doit contenir au moins une minuscule"
+    if not re.search(r"[0-9]", mdp):
+        return "Le mot de passe doit contenir au moins un chiffre"
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", mdp):
+        return "Le mot de passe doit contenir au moins un caractère spécial (!@#$%^&*)"
+    return None
 
 @auth.route('/login')
 def login_page():
@@ -47,10 +61,14 @@ def register():
     mot_de_passe = data.get('mot_de_passe', '')
     telephone = data.get('telephone', '')
     province = data.get('province', '')
+
     if not nom or not email or not mot_de_passe:
         return jsonify({'erreur': 'Tous les champs sont requis'}), 400
-    if len(mot_de_passe) < 6:
-        return jsonify({'erreur': 'Mot de passe trop court (6 caractères minimum)'}), 400
+
+    erreur_mdp = valider_mot_de_passe(mot_de_passe)
+    if erreur_mdp:
+        return jsonify({'erreur': erreur_mdp}), 400
+
     conn = get_db()
     cursor = conn.cursor()
     try:
