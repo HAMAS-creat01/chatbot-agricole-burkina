@@ -3,37 +3,21 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import sqlite3
-from config import Config
+
+def get_db_path():
+    base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    db_dir = os.path.join(base, 'database')
+    os.makedirs(db_dir, exist_ok=True)
+    return os.path.join(db_dir, 'agriculteur.db')
 
 def get_db():
-    conn = sqlite3.connect(Config.DATABASE)
+    conn = sqlite3.connect(get_db_path())
     conn.row_factory = sqlite3.Row
     return conn
 
 def init_db():
     conn = get_db()
     cursor = conn.cursor()
-
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS cultures (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nom TEXT NOT NULL,
-            type_sol TEXT,
-            periode_plantation TEXT,
-            duree_croissance TEXT,
-            conseils TEXT
-        )
-    ''')
-
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS maladies (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            nom TEXT NOT NULL,
-            culture_affectee TEXT,
-            symptomes TEXT,
-            traitement TEXT
-        )
-    ''')
 
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS conversations (
